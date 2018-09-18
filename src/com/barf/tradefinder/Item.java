@@ -4,17 +4,64 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum Item {
+  // @formatter:off
+  OFFER(544, ItemType.OFFER),
 
-  TEST_ITEM(0, ItemType.OTHER, 0);
+  KEY(496, ItemType.KEY),
+  GOLDEN_EGG(1298, ItemType.KEY),
+
+  CHAMPIONS_CRATE_1(494, ItemType.CRATE),
+  CHAMPIONS_CRATE_2(495, ItemType.CRATE),
+  CHAMPIONS_CRATE_3(502, ItemType.CRATE),
+  CHAMPIONS_CRATE_4(545, ItemType.CRATE),
+  PLAYERS_CHOICE_CRATE_1(587, ItemType.CRATE),
+  TURBO_CRATE(603, ItemType.CRATE),
+  NITRO_CRATE(641, ItemType.CRATE),
+  OVERDRIVE_CRATE(671, ItemType.CRATE),
+  ACCELERATOR_CRATE(733, ItemType.CRATE),
+  HAUNTED_HALLOWS_CRATE(881, ItemType.CRATE),
+  VELOCITY_CRATE(961, ItemType.CRATE),
+  SECRET_SANTA_CRATE(983, ItemType.CRATE),
+  VICTORY_CRATE(1006, ItemType.CRATE),
+  SPRING_FEVER_CRATE(1026, ItemType.CRATE),
+  TRIUMPH_CRATE(1159, ItemType.CRATE),
+  IMPACT_CRATE(1210, ItemType.CRATE),
+  RL_BEACH_BLAST_CRATE(1276, ItemType.CRATE),
+  ZEPHYR_CRATE(1305, ItemType.CRATE),
+
+  //TODO toppers
+  OTHER(0, ItemType.OTHER);
+  // @formatter:on
+
+  private enum ItemType {
+    OFFER, KEY, CRATE, TOPPER, OTHER;
+  }
 
   private final int id;
   private final ItemType type;
-  private final Paint color;
+  private boolean painted;
+  private static Map<Integer, Item> map = new HashMap<>();
 
-  Item(final int id, final ItemType type, final int color) {
+  Item(final int id, final ItemType type) {
     this.id = id;
     this.type = type;
-    this.color = Paint.valueOf(color);
+    this.painted = this.type.equals(ItemType.TOPPER);
+  }
+
+  static {
+    for (final Item item : Item.values()) {
+      Item.map.put(item.id, item);
+    }
+  }
+
+  protected static Item valueOf(final int id, final int paint) {
+    final Item item = Item.map.get(id);
+
+    if ((item == null) || (item.painted && (paint == 0))) {
+      return Item.OTHER;
+    } else {
+      return item;
+    }
   }
 
   public int getId() {
@@ -26,34 +73,6 @@ public enum Item {
   }
 
   public boolean isPainted() {
-    return !this.color.equals(Paint.NONE);
-  }
-
-  // internal enums
-
-  private enum ItemType {
-    OFFER, CRATE, TOPPER, KEY, OTHER;
-  }
-
-  private enum Paint {
-    NONE(0), BLACK(1), BURNT_SIENNA(2), COBALT(3), CRIMSON(4), FOREST_GREEN(5), GREY(6), LIME(7), ORANGE(8), PINK(9), PURPLE(10), SAFFRON(
-        11), SKY_BLUE(12), TITANIUM_WHITE(13);
-
-    int id;
-    private static Map<Integer, Paint> map = new HashMap<>();
-
-    private Paint(final int id) {
-      this.id = id;
-    }
-
-    static {
-      for (final Paint paint : Paint.values()) {
-        Paint.map.put(paint.id, paint);
-      }
-    }
-
-    protected static Paint valueOf(final int id) {
-      return Paint.map.get(id);
-    }
+    return this.painted;
   }
 }
