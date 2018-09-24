@@ -1,2 +1,4 @@
 /.gradle/
-*.class
+/src/main/resources/credentials.json
+/tokens/StoredCredential
+/bin/

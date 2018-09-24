@@ -38,6 +38,7 @@ public class SpreadSheetData {
   private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS_READONLY);
   private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
 
+  @SuppressWarnings("resource")
   private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
     // Load client secrets.
     final InputStream in = SpreadSheetData.class.getResourceAsStream(SpreadSheetData.CREDENTIALS_FILE_PATH);

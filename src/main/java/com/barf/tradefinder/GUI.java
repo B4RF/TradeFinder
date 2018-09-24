@@ -14,6 +14,7 @@ import java.util.Set;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -75,8 +76,9 @@ public class GUI extends JFrame {
         try {
           topperList = SpreadSheetData.getSheetData();
         } catch (IOException | GeneralSecurityException e) {
-          // TODO Auto-generated catch block
+          JOptionPane.showMessageDialog(null, "Error during spreadsheet connection.");
           e.printStackTrace();
+          return;
         }
 
         for (final Item item : Item.values()) {
@@ -119,7 +121,7 @@ public class GUI extends JFrame {
   }
 
   @SuppressWarnings("unused")
-  public static void main(final String[] args) throws IOException, GeneralSecurityException {
+  public static void main(final String[] args) {
 
     new GUI();
   }
