@@ -3,7 +3,12 @@ package com.barf.tradefinder;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BoxLayout;
@@ -15,6 +20,7 @@ import javax.swing.JTextPane;
 
 import com.barf.tradefinder.domain.Item;
 import com.barf.tradefinder.domain.Item.ItemType;
+import com.barf.tradefinder.domain.PaintedItem.Color;
 import com.barf.tradefinder.domain.TradeOffer;
 import com.barf.tradefinder.domain.UrlTextPane;
 
@@ -65,16 +71,30 @@ public class GUI extends JFrame {
         final Set<TradeOffer> keyOffers = new HashSet<>();
         final Set<TradeOffer> itemOffers = new HashSet<>();
 
-        for (final Item item : Item.getAllItems()) {
+        Map<Item, List<Color>> topperList = new HashMap<>();
+        try {
+          topperList = SpreadSheetData.getSheetData();
+        } catch (IOException | GeneralSecurityException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+
+        for (final Item item : Item.values()) {
           if (item.getType().equals(ItemType.TOPPER)) {
-            final Set<TradeOffer> allOffers = Request.getOffersForItem(item.getId());
+            final List<Color> colors = topperList.get(item);
 
-            for (final TradeOffer tradeOffer : allOffers) {
-              if (tradeOffer.containsKey()) {
-                keyOffers.add(tradeOffer);
+            if (!colors.isEmpty()) {
+              final List<TradeOffer> allOffers = Request.getOffersForItem(item.getId());
 
-              } else if (tradeOffer.containsItem()) {
-                itemOffers.add(tradeOffer);
+              for (final TradeOffer tradeOffer : allOffers) {
+                if (tradeOffer.wantsContainsOneOf(item, colors)) {
+                  if (tradeOffer.hasContainsKey()) {
+                    keyOffers.add(tradeOffer);
+
+                  } else if (tradeOffer.hasContainsItem()) {
+                    itemOffers.add(tradeOffer);
+                  }
+                }
               }
             }
           }
@@ -99,7 +119,7 @@ public class GUI extends JFrame {
   }
 
   @SuppressWarnings("unused")
-  public static void main(final String[] args) {
+  public static void main(final String[] args) throws IOException, GeneralSecurityException {
 
     new GUI();
   }

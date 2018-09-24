@@ -2,9 +2,7 @@ package com.barf.tradefinder;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,14 +11,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.barf.tradefinder.domain.Item;
 import com.barf.tradefinder.domain.Item.ItemType;
+import com.barf.tradefinder.domain.PaintedItem;
 import com.barf.tradefinder.domain.TradeOffer;
 
 public class Request {
 
-  public static Set<TradeOffer> getOffersForItem(final int id) {
-    final Set<TradeOffer> tradeOffers = new HashSet<>();
+  public static List<TradeOffer> getOffersForItem(final int id) {
+    final List<TradeOffer> tradeOffers = new ArrayList<>();
 
     final List<Document> pages = Request.offerItem(id, 1);
     for (final Document page : pages) {
@@ -29,9 +27,10 @@ public class Request {
       for (final Element element : offers) {
         final String tradeLink = element.getElementsByClass("rlg-trade-link-container").select("a").first().attr("href");
 
-        final List<Item> wants = Request.getItemsInElement(element.getElementById("rlg-theiritems"));
-        if (wants.stream().filter(i -> i.getType().equals(ItemType.TOPPER)).findFirst().isPresent()) {
-          final List<Item> has = Request.getItemsInElement(element.getElementById("rlg-youritems"));
+        // uncolored toppers are filtered so this is a valid if
+        final List<PaintedItem> wants = Request.getItemsInElement(element.getElementById("rlg-theiritems"));
+        if (wants.stream().filter(p -> p.getItem().getType().equals(ItemType.TOPPER)).findFirst().isPresent()) {
+          final List<PaintedItem> has = Request.getItemsInElement(element.getElementById("rlg-youritems"));
 
           tradeOffers.add(new TradeOffer(has, wants, tradeLink));
         }
@@ -66,8 +65,8 @@ public class Request {
     return documents;
   }
 
-  private static List<Item> getItemsInElement(final Element element) {
-    final List<Item> items = new ArrayList<>();
+  private static List<PaintedItem> getItemsInElement(final Element element) {
+    final List<PaintedItem> items = new ArrayList<>();
 
     final Pattern p = Pattern.compile("(\\d+)");
 
@@ -79,9 +78,9 @@ public class Request {
       final int itemId = Integer.parseInt(m.group());
       m.find();
       m.find();
-      final int paint = Integer.parseInt(m.group());
+      final int paintId = Integer.parseInt(m.group());
 
-      items.add(Item.valueOf(itemId, paint));
+      items.add(new PaintedItem(itemId, paintId));
     }
 
     return items;

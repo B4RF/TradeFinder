@@ -3,14 +3,15 @@ package com.barf.tradefinder.domain;
 import java.util.List;
 
 import com.barf.tradefinder.domain.Item.ItemType;
+import com.barf.tradefinder.domain.PaintedItem.Color;
 
 public class TradeOffer {
 
-  private final List<Item> has;
-  private final List<Item> wants;
+  private final List<PaintedItem> has;
+  private final List<PaintedItem> wants;
   private final String tradeLink;
 
-  public TradeOffer(final List<Item> has, final List<Item> wants, final String link) {
+  public TradeOffer(final List<PaintedItem> has, final List<PaintedItem> wants, final String link) {
     this.has = has;
     this.wants = wants;
     this.tradeLink = link;
@@ -20,13 +21,17 @@ public class TradeOffer {
     return this.tradeLink;
   }
 
-  public boolean containsKey() {
-    return this.has.stream().filter(i -> i.getType().equals(ItemType.KEY)).findFirst().isPresent();
+  public boolean hasContainsKey() {
+    return this.has.stream().filter(p -> p.getItem().getType().equals(ItemType.KEY)).findFirst().isPresent();
   }
 
-  public boolean containsItem() {
-    return this.has.stream().filter(i -> !i.getType().equals(ItemType.OFFER) && !i.getType().equals(ItemType.CRATE)).findFirst()
-        .isPresent();
+  public boolean hasContainsItem() {
+    return this.has.stream().filter(p -> !p.getItem().getType().equals(ItemType.OFFER) && !p.getItem().getType().equals(ItemType.CRATE))
+        .findFirst().isPresent();
+  }
+
+  public boolean wantsContainsOneOf(final Item item, final List<Color> colors) {
+    return this.wants.stream().filter(p -> p.getItem().equals(item) && colors.contains(p.getColor())).findFirst().isPresent();
   }
 
   public String getLink() {
