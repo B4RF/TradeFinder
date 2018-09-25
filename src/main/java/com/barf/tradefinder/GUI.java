@@ -1,10 +1,12 @@
 package com.barf.tradefinder;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,10 +34,11 @@ public class GUI extends JFrame {
   static JPanel keyOfferPanel = new JPanel();
   static JPanel itemOfferPanel = new JPanel();
 
+  static List<TradeOffer> lastRequest = new ArrayList<>();
+
   public GUI() {
     this.setTitle("TradeFinder");
     this.setResizable(false);
-    this.setSize(300, 600);
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setLayout(new BorderLayout());
 
@@ -44,10 +47,11 @@ public class GUI extends JFrame {
     GUI.itemOfferPanel.setLayout(new BoxLayout(GUI.itemOfferPanel, BoxLayout.Y_AXIS));
 
     final JButton search = new JButton("Search");
+    search.setPreferredSize(new Dimension(260, 26));
     this.add(search, BorderLayout.NORTH);
 
     final JScrollPane scroll = new JScrollPane(GUI.mainPanel);
-    this.add(scroll);
+    this.add(scroll, BorderLayout.CENTER);
 
     final JTextPane keyText = new JTextPane();
     keyText.setText("Key offers:");
@@ -61,6 +65,7 @@ public class GUI extends JFrame {
 
     this.setLocationRelativeTo(null);
     this.setVisible(true);
+    this.pack();
 
     search.addActionListener(new ActionListener() {
       @Override
@@ -102,6 +107,14 @@ public class GUI extends JFrame {
           }
         }
 
+        // remove already known offers
+        final List<TradeOffer> tmp = new ArrayList<>();
+        tmp.addAll(keyOffers);
+        tmp.addAll(itemOffers);
+        keyOffers.removeAll(GUI.lastRequest);
+        itemOffers.removeAll(GUI.lastRequest);
+        GUI.lastRequest = tmp;
+
         for (final TradeOffer tradeOffer : keyOffers) {
           final UrlTextPane textPane = new UrlTextPane();
           textPane.setText(tradeOffer.getLink());
@@ -114,8 +127,13 @@ public class GUI extends JFrame {
           GUI.itemOfferPanel.add(textPane);
         }
 
-        GUI.mainPanel.setPreferredSize(GUI.mainPanel.getPreferredSize());
-        GUI.mainPanel.validate();
+        // calculate maximum height
+        scroll.setPreferredSize(null);
+        GUI.this.pack();
+        final int preferredWidth = Math.min(260, scroll.getWidth());
+        final int preferredHeight = Math.min(600, scroll.getHeight());
+        scroll.setPreferredSize(new Dimension(preferredWidth, preferredHeight));
+        GUI.this.pack();
       }
     });
   }

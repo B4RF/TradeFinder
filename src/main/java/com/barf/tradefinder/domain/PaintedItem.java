@@ -4,6 +4,7 @@ public class PaintedItem {
 
   Item item;
   Color color;
+  // TODO add amount
 
   public PaintedItem(final int itemId, final int colorId) {
     this(Item.valueOf(itemId), Color.valueOf(colorId));
@@ -20,6 +21,36 @@ public class PaintedItem {
 
   public Color getColor() {
     return this.color;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = (prime * result) + ((this.color == null) ? 0 : this.color.hashCode());
+    result = (prime * result) + ((this.item == null) ? 0 : this.item.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    final PaintedItem other = (PaintedItem) obj;
+    if (this.color != other.color) {
+      return false;
+    }
+    if (this.item != other.item) {
+      return false;
+    }
+    return true;
   }
 
   public enum Color {
