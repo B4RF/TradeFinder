@@ -27,7 +27,7 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 public class SpreadSheetData {
-  private static final String APPLICATION_NAME = "Google Sheets API Java Quickstart";
+  private static final String APPLICATION_NAME = "B4RFs Inventory";
   private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
   private static final String TOKENS_DIRECTORY_PATH = "tokens";
 
