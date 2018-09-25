@@ -43,8 +43,8 @@ public class TradeOffer {
     final int prime = 31;
     int result = 1;
     result = (prime * result) + ((this.has == null) ? 0 : this.has.hashCode());
-    result = (prime * result) + ((this.tradeLink == null) ? 0 : this.tradeLink.hashCode());
     result = (prime * result) + ((this.wants == null) ? 0 : this.wants.hashCode());
+    result = (prime * result) + ((this.tradeLink == null) ? 0 : this.tradeLink.hashCode());
     return result;
   }
 
@@ -64,14 +64,14 @@ public class TradeOffer {
       if (other.has != null) {
         return false;
       }
-    } else if (!this.has.containsAll(other.has) || !other.has.containsAll(this.has)) {
+    } else if (!this.has.equals(other.has)) {
       return false;
     }
     if (this.wants == null) {
       if (other.wants != null) {
         return false;
       }
-    } else if (!this.wants.containsAll(other.wants) || !other.wants.containsAll(this.wants)) {
+    } else if (!this.wants.equals(other.wants)) {
       return false;
     }
     if (this.tradeLink == null) {
