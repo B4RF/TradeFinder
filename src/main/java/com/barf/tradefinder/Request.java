@@ -80,7 +80,13 @@ public class Request {
       m.find();
       final int paintId = Integer.parseInt(m.group());
 
-      items.add(new PaintedItem(itemId, paintId));
+      int amount = 1;
+      final Element amountElement = itemElement.getElementsByClass("rlg-trade-display-item__amount is--rare").first();
+      if (amountElement != null) {
+        amount = Integer.parseInt(amountElement.text());
+      }
+
+      items.add(new PaintedItem(itemId, paintId, amount));
     }
 
     return items;

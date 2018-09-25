@@ -40,7 +40,12 @@ public class TradeOffer {
 
   @Override
   public int hashCode() {
-    return this.tradeLink.hashCode();
+    final int prime = 31;
+    int result = 1;
+    result = (prime * result) + ((this.has == null) ? 0 : this.has.hashCode());
+    result = (prime * result) + ((this.wants == null) ? 0 : this.wants.hashCode());
+    result = (prime * result) + ((this.tradeLink == null) ? 0 : this.tradeLink.hashCode());
+    return result;
   }
 
   @Override
@@ -55,6 +60,20 @@ public class TradeOffer {
       return false;
     }
     final TradeOffer other = (TradeOffer) obj;
+    if (this.has == null) {
+      if (other.has != null) {
+        return false;
+      }
+    } else if (!this.has.equals(other.has)) {
+      return false;
+    }
+    if (this.wants == null) {
+      if (other.wants != null) {
+        return false;
+      }
+    } else if (!this.wants.equals(other.wants)) {
+      return false;
+    }
     if (this.tradeLink == null) {
       if (other.tradeLink != null) {
         return false;
