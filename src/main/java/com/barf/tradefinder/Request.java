@@ -48,18 +48,29 @@ public class Request {
     if (page > 1) {
       url += "&p=" + page;
     }
-    try {
-      final Document doc = Jsoup.connect(url).get();
-      documents.add(doc);
 
-      final String pageLink = doc.getElementsByClass("rlg-trade-pagination-button").last().attr("href");
+    Document doc = null;
 
-      if (pageLink.length() > 0) {
-        final int nextPage = Integer.parseInt(pageLink.substring(pageLink.length() - 1));
-        documents.addAll(Request.offerItem(id, nextPage));
+    while ((doc == null) || doc.getElementsByClass("rlg-trade-pagination-button").isEmpty()) {
+      try {
+        doc = Jsoup.connect(url).get();
+      } catch (final IOException e) {
+        e.printStackTrace();
+
+        try {
+          Thread.sleep(1000l);
+        } catch (final InterruptedException e1) {
+          e1.printStackTrace();
+        }
       }
-    } catch (final IOException e) {
-      e.printStackTrace();
+    }
+
+    documents.add(doc);
+    final String pageLink = doc.getElementsByClass("rlg-trade-pagination-button").last().attr("href");
+
+    if (pageLink.length() > 0) {
+      final int nextPage = Integer.parseInt(pageLink.substring(pageLink.length() - 1));
+      documents.addAll(Request.offerItem(id, nextPage));
     }
 
     return documents;
