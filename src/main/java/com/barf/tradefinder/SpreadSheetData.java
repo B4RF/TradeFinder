@@ -63,7 +63,7 @@ public class SpreadSheetData {
     // Build a new authorized API client service.
     final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
     final String spreadsheetId = "1WGt3_fmOSDuwgrP6hxRWRorBjmZrGknBe-_TAjt55-g";
-    final String range = "D7:T48";
+    final String range = "D7:T47";
     final Sheets service = new Sheets.Builder(HTTP_TRANSPORT, SpreadSheetData.JSON_FACTORY, SpreadSheetData.getCredentials(HTTP_TRANSPORT))
         .setApplicationName(SpreadSheetData.APPLICATION_NAME)
         .build();
