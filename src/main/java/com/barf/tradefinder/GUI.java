@@ -86,6 +86,7 @@ public class GUI extends JFrame {
           return;
         }
 
+        Request.hasConnectionIssues = false;
         for (final Item item : Item.values()) {
           if (item.getType().equals(ItemType.TOPPER)) {
             final List<Color> colors = topperList.get(item);
@@ -113,7 +114,12 @@ public class GUI extends JFrame {
         tmp.addAll(itemOffers);
         keyOffers.removeAll(GUI.lastRequest);
         itemOffers.removeAll(GUI.lastRequest);
-        GUI.lastRequest = tmp;
+        if (Request.hasConnectionIssues) {
+          GUI.lastRequest.addAll(tmp);
+          JOptionPane.showMessageDialog(GUI.this, "RL Garage has connection issues...");
+        } else {
+          GUI.lastRequest = tmp;
+        }
 
         for (final TradeOffer tradeOffer : keyOffers) {
           final UrlTextPane textPane = new UrlTextPane();
