@@ -78,8 +78,10 @@ public class GUI extends JFrame {
         final Set<TradeOffer> itemOffers = new HashSet<>();
 
         Map<Item, List<Color>> topperList = new HashMap<>();
+        List<String> userBlacklist = new ArrayList<>();
         try {
           topperList = SpreadSheetData.getSheetData();
+          userBlacklist = SpreadSheetData.getUserBlacklist();
         } catch (IOException | GeneralSecurityException e) {
           JOptionPane.showMessageDialog(null, "Error during spreadsheet connection.");
           e.printStackTrace();
@@ -95,7 +97,7 @@ public class GUI extends JFrame {
               final List<TradeOffer> allOffers = Request.getOffersForItem(item.getId());
 
               for (final TradeOffer tradeOffer : allOffers) {
-                if (tradeOffer.wantsContainsOneOf(item, colors)) {
+                if (tradeOffer.wantsContainsOneOf(item, colors) && !userBlacklist.contains(tradeOffer.getUser())) {
                   if (tradeOffer.hasContainsKey()) {
                     keyOffers.add(tradeOffer);
 

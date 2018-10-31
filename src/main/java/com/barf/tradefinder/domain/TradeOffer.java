@@ -10,15 +10,21 @@ public class TradeOffer {
   private final List<PaintedItem> has;
   private final List<PaintedItem> wants;
   private final String tradeLink;
+  private final String user;
 
-  public TradeOffer(final List<PaintedItem> has, final List<PaintedItem> wants, final String link) {
+  public TradeOffer(final List<PaintedItem> has, final List<PaintedItem> wants, final String link, final String user) {
     this.has = has;
     this.wants = wants;
     this.tradeLink = link;
+    this.user = user;
   }
 
   public String getTradeLink() {
     return this.tradeLink;
+  }
+
+  public String getUser() {
+    return this.user;
   }
 
   public boolean hasContainsKey() {
@@ -79,6 +85,13 @@ public class TradeOffer {
         return false;
       }
     } else if (!this.tradeLink.equals(other.tradeLink)) {
+      return false;
+    }
+    if (this.user == null) {
+      if (other.user != null) {
+        return false;
+      }
+    } else if (!this.user.equals(other.user)) {
       return false;
     }
     return true;
