@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -53,10 +54,6 @@ public class SpreadSheetData {
     return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
   }
 
-  /**
-   * Prints the names and majors of students in a sample spreadsheet:
-   * https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
-   */
   public static Map<Item, List<Color>> getSheetData() throws IOException, GeneralSecurityException {
     final Map<Item, List<Color>> topperList = new HashMap<>();
 
@@ -92,4 +89,27 @@ public class SpreadSheetData {
     return topperList;
   }
 
+  public static List<String> getUserBlacklist() throws IOException, GeneralSecurityException {
+    List<String> blacklist = new ArrayList<>();
+
+    // Build a new authorized API client service.
+    final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+    final String spreadsheetId = "1WGt3_fmOSDuwgrP6hxRWRorBjmZrGknBe-_TAjt55-g";
+    final String range = "D1:D1";
+    final Sheets service = new Sheets.Builder(HTTP_TRANSPORT, SpreadSheetData.JSON_FACTORY, SpreadSheetData.getCredentials(HTTP_TRANSPORT))
+        .setApplicationName(SpreadSheetData.APPLICATION_NAME)
+        .build();
+    final ValueRange response = service.spreadsheets().values()
+        .get(spreadsheetId, range)
+        .execute();
+
+    final List<List<Object>> values = response.getValues();
+    if ((values == null) || values.isEmpty()) {
+      System.out.println("No data found.");
+    } else {
+      final String users = (String) values.get(0).get(0);
+      blacklist = Arrays.asList(users.split(";"));
+    }
+    return blacklist;
+  }
 }

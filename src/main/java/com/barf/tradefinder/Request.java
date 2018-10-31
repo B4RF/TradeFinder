@@ -29,13 +29,14 @@ public class Request {
       final Elements offers = page.getElementsByClass("rlg-trade-display-container is--user");
       for (final Element element : offers) {
         final String tradeLink = element.getElementsByClass("rlg-trade-link-container").select("a").first().attr("href");
+        final String user = element.getElementsByClass("rlg-trade-player-link").first().text();
 
         // uncolored toppers are filtered so this is a valid if
         final List<PaintedItem> wants = Request.getItemsInElement(element.getElementById("rlg-theiritems"));
         if (wants.stream().filter(p -> p.getItem().getType().equals(ItemType.TOPPER)).findFirst().isPresent()) {
           final List<PaintedItem> has = Request.getItemsInElement(element.getElementById("rlg-youritems"));
 
-          tradeOffers.add(new TradeOffer(has, wants, tradeLink));
+          tradeOffers.add(new TradeOffer(has, wants, tradeLink, user));
         }
       }
     }
