@@ -11,12 +11,15 @@ public class TradeOffer {
   private final List<PaintedItem> wants;
   private final String tradeLink;
   private final String user;
+  private final boolean supress;
 
-  public TradeOffer(final List<PaintedItem> has, final List<PaintedItem> wants, final String link, final String user) {
+  public TradeOffer(final List<PaintedItem> has, final List<PaintedItem> wants, final String link, final String user,
+      final boolean supress) {
     this.has = has;
     this.wants = wants;
     this.tradeLink = link;
     this.user = user;
+    this.supress = supress;
   }
 
   public String getTradeLink() {
@@ -25,6 +28,10 @@ public class TradeOffer {
 
   public String getUser() {
     return this.user;
+  }
+
+  public boolean isSupressed() {
+    return this.supress;
   }
 
   public boolean hasContainsKey() {
