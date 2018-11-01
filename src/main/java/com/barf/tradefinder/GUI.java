@@ -173,7 +173,7 @@ public class GUI extends JFrame {
       public void actionPerformed(final ActionEvent e) {
         if (e.getActionCommand().equals("m")) {
           GUI.unit = TimeUnit.MINUTES;
-          JOptionPane.showMessageDialog(GUI.this, "Offers have been restricted to the last minute!");
+          JOptionPane.showMessageDialog(GUI.this, "Offers have been restricted to the last 10 minutes!");
         } else if (e.getActionCommand().equals("h")) {
           GUI.unit = TimeUnit.HOURS;
           JOptionPane.showMessageDialog(GUI.this, "Offers have been restricted to the last hour!");

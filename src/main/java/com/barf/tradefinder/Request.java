@@ -50,10 +50,11 @@ public class Request {
 
   private static boolean isAfter(final String lastActive, final TimeUnit maxUnit) {
     // Active 5 seconds ago. Posted by
-    final Pattern pattern = Pattern.compile("Active \\d+ (\\w+) ago");
+    final Pattern pattern = Pattern.compile("Active (\\d+) (\\w+) ago");
     final Matcher matcher = pattern.matcher(lastActive);
     matcher.find();
-    final String unit = matcher.group(1);
+    final int amount = Integer.parseInt(matcher.group(1));
+    final String unit = matcher.group(2);
 
     // only allow units below given
     switch (unit) {
@@ -62,6 +63,7 @@ public class Request {
     case "minute":
       return false;
     case "minutes":
+      return TimeUnit.MINUTES.equals(maxUnit) && (amount > 10);
     case "hour":
       return TimeUnit.MINUTES.equals(maxUnit);
     case "hours":
