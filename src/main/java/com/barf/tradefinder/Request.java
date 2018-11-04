@@ -3,6 +3,7 @@ package com.barf.tradefinder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,7 +21,7 @@ public class Request {
   final static int maxTries = 5;
   static boolean hasConnectionIssues = false;
 
-  public static List<TradeOffer> getOffersForItem(final int id) {
+  public static List<TradeOffer> getOffersForItem(final int id, final TimeUnit maxUnit) {
     final List<TradeOffer> tradeOffers = new ArrayList<>();
 
     final List<Document> pages = Request.offerItem(id, 1);
@@ -28,20 +29,49 @@ public class Request {
 
       final Elements offers = page.getElementsByClass("rlg-trade-display-container is--user");
       for (final Element element : offers) {
-        final String tradeLink = element.getElementsByClass("rlg-trade-link-container").select("a").first().attr("href");
-        final String user = element.getElementsByClass("rlg-trade-player-link").first().text();
 
         // uncolored toppers are filtered so this is a valid if
         final List<PaintedItem> wants = Request.getItemsInElement(element.getElementById("rlg-theiritems"));
+
         if (wants.stream().filter(p -> p.getItem().getType().equals(ItemType.TOPPER)).findFirst().isPresent()) {
           final List<PaintedItem> has = Request.getItemsInElement(element.getElementById("rlg-youritems"));
+          final String tradeLink = element.getElementsByClass("rlg-trade-link-container").select("a").first().attr("href");
+          final String user = element.getElementsByClass("rlg-trade-player-link").first().text();
+          final String lastActive = element.getElementsByClass("rlg-trade-display-added").first().text();
+          final boolean supress = (maxUnit != null) && Request.isAfter(lastActive, maxUnit);
 
-          tradeOffers.add(new TradeOffer(has, wants, tradeLink, user));
+          tradeOffers.add(new TradeOffer(has, wants, tradeLink, user, supress));
         }
       }
     }
 
     return tradeOffers;
+  }
+
+  private static boolean isAfter(final String lastActive, final TimeUnit maxUnit) {
+    // Active 5 seconds ago. Posted by
+    final Pattern pattern = Pattern.compile("Active (\\d+) (\\w+) ago");
+    final Matcher matcher = pattern.matcher(lastActive);
+    matcher.find();
+    final int amount = Integer.parseInt(matcher.group(1));
+    final String unit = matcher.group(2);
+
+    // only allow units below given
+    switch (unit) {
+    case "second":
+    case "seconds":
+    case "minute":
+      return false;
+    case "minutes":
+      return TimeUnit.MINUTES.equals(maxUnit) && (amount > 10);
+    case "hour":
+      return TimeUnit.MINUTES.equals(maxUnit);
+    case "hours":
+    case "day":
+      return TimeUnit.MINUTES.equals(maxUnit) || TimeUnit.HOURS.equals(maxUnit);
+    }
+
+    return true;
   }
 
   private static List<Document> offerItem(final int id, final int page) {
