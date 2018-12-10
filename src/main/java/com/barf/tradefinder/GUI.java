@@ -39,8 +39,8 @@ public class GUI extends JFrame {
 
   public GUI() {
     this.setTitle("TradeFinder");
-    this.setResizable(true);
-    this.setSize(260, 90);
+    this.setSize(260, 84);
+    this.setResizable(false);
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setLayout(new BorderLayout());
 
