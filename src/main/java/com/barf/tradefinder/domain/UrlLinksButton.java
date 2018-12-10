@@ -41,6 +41,13 @@ public class UrlLinksButton extends JButton {
 
   @Override
   public void setText(final String text) {
-    super.setText(text + " (" + this.urls.size() + ")");
+    final String suffix = this.urls.size() == 1 ? " offer" : " offers";
+    if (this.urls.isEmpty()) {
+      this.setEnabled(false);
+      super.setText("No " + text + suffix);
+    } else {
+      this.setEnabled(true);
+      super.setText(this.urls.size() + " " + text + suffix);
+    }
   }
 }

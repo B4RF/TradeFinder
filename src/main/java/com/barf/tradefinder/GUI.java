@@ -57,14 +57,14 @@ public class GUI extends JFrame {
     this.add(search, c);
 
     final UrlLinksButton keyUrls = new UrlLinksButton();
-    keyUrls.setText("Key offers");
+    keyUrls.setText("key");
     c.weightx = 0.5;
     c.gridy = 1;
     c.gridwidth = 1;
     this.add(keyUrls, c);
 
     final UrlLinksButton itemUrls = new UrlLinksButton();
-    itemUrls.setText("Item offers");
+    itemUrls.setText("item");
     c.gridx = 1;
     this.add(itemUrls, c);
 
@@ -139,8 +139,8 @@ public class GUI extends JFrame {
           }
         }
 
-        keyUrls.setText("Key offers");
-        itemUrls.setText("Item offers");
+        keyUrls.setText("key");
+        itemUrls.setText("item");
       }
     });
 
