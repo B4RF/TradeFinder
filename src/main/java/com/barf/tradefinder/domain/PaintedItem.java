@@ -4,15 +4,17 @@ public class PaintedItem {
 
   Item item;
   Color color;
+  boolean bluePrint;
   int amount;
 
-  public PaintedItem(final int itemId, final int colorId, final int amount) {
-    this(Item.valueOf(itemId), Color.valueOf(colorId), amount);
+  public PaintedItem(final int itemId, final int colorId, final boolean isBluePrint, final int amount) {
+    this(Item.valueOf(itemId), Color.valueOf(colorId), isBluePrint, amount);
   }
 
-  public PaintedItem(final Item item, final Color color, final int amount) {
+  public PaintedItem(final Item item, final Color color, final boolean isBluePrint, final int amount) {
     this.item = item;
     this.color = color;
+    this.bluePrint = isBluePrint;
     this.amount = amount;
   }
 
@@ -22,6 +24,10 @@ public class PaintedItem {
 
   public Color getColor() {
     return this.color;
+  }
+
+  public boolean isBluePrint() {
+    return this.bluePrint;
   }
 
   @Override

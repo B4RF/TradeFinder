@@ -3,6 +3,7 @@ package com.barf.tradefinder;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -11,17 +12,22 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import com.barf.tradefinder.domain.Item;
@@ -29,6 +35,10 @@ import com.barf.tradefinder.domain.Item.ItemType;
 import com.barf.tradefinder.domain.PaintedItem.Color;
 import com.barf.tradefinder.domain.TradeOffer;
 import com.barf.tradefinder.domain.UrlLinksButton;
+
+import cmonster.browsers.ChromeBrowser;
+import cmonster.cookies.Cookie;
+import cmonster.cookies.DecryptedCookie;
 
 public class GUI extends JFrame {
   private static final long serialVersionUID = 1L;
@@ -101,7 +111,7 @@ public class GUI extends JFrame {
 
               for (final TradeOffer tradeOffer : allOffers) {
                 if (tradeOffer.wantsContainsOneOf(item, colors) && !userBlacklist.contains(tradeOffer.getUser())) {
-                  if (tradeOffer.hasContainsKey()) {
+                  if (tradeOffer.hasContainsCredits()) {
                     keyOffers.add(tradeOffer);
 
                   } else if (tradeOffer.hasContainsItem()) {
@@ -124,8 +134,8 @@ public class GUI extends JFrame {
           JOptionPane.showMessageDialog(GUI.this, "RL Garage has connection issues...");
         } else {
           GUI.lastRequest = tmp;
+          GUI.unit = null;
         }
-        GUI.unit = null;
 
         for (final TradeOffer tradeOffer : keyOffers) {
           if (!tradeOffer.isSupressed()) {
@@ -149,8 +159,11 @@ public class GUI extends JFrame {
     inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_H, 0), "unit");
     inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_D, 0), "unit");
     inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_N, 0), "unit");
+    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, 0), "cookie");
+    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_I, 0), "item");
 
-    this.getRootPane().getActionMap().put("unit", new AbstractAction() {
+    final ActionMap aMap = this.getRootPane().getActionMap();
+    aMap.put("unit", new AbstractAction() {
       private static final long serialVersionUID = 1L;
 
       @Override
@@ -170,11 +183,48 @@ public class GUI extends JFrame {
         }
       }
     });
+
+    aMap.put("cookie", new AbstractAction() {
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        final String cookieName = JOptionPane.showInputDialog(GUI.this, "Input the name of the cookie which needs to be imported.");
+
+        final ChromeBrowser chrome = new ChromeBrowser();
+        final Iterator<Cookie> iter = chrome.getCookiesForDomain(cookieName, "rocket-league.com").iterator();
+        if (iter.hasNext()) {
+          Request.cookies.add((DecryptedCookie) iter.next());
+        }
+      }
+    });
+
+    aMap.put("item", new AbstractAction() {
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        final JTextField itemId = new JTextField();
+        final JTextField keyPrice = new JTextField();
+
+        final JPanel itemPanel = new JPanel(new GridLayout(2, 2));
+        itemPanel.add(new JLabel("Item ID:"));
+        itemPanel.add(itemId);
+        itemPanel.add(new JLabel("Max price:"));
+        itemPanel.add(keyPrice);
+
+        final int result = JOptionPane.showConfirmDialog(null, itemPanel, "Enter item ID and max price in keys.",
+            JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+          System.out.println("x value: " + itemId.getText());
+          System.out.println("y value: " + keyPrice.getText());
+        }
+      }
+    });
   }
 
   @SuppressWarnings("unused")
   public static void main(final String[] args) {
-
     new GUI();
   }
 }
