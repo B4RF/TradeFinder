@@ -34,13 +34,12 @@ public class TradeOffer {
     return this.supress;
   }
 
-  public boolean hasContainsKey() {
-    return this.has.stream().filter(p -> p.getItem().getType().equals(ItemType.KEY)).findFirst().isPresent();
+  public boolean hasContainsCredits() {
+    return this.has.stream().filter(p -> p.getItem().getType().equals(ItemType.CREDIT)).findFirst().isPresent();
   }
 
   public boolean hasContainsItem() {
-    return this.has.stream().filter(p -> !p.getItem().getType().equals(ItemType.OFFER) && !p.getItem().getType().equals(ItemType.CRATE))
-        .findFirst().isPresent();
+    return this.has.stream().filter(p -> !p.getItem().getType().equals(ItemType.OFFER) && !p.isBluePrint()).findFirst().isPresent();
   }
 
   public boolean wantsContainsOneOf(final Item item, final List<Color> colors) {
