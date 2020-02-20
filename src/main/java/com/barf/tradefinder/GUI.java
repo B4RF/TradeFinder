@@ -1,7 +1,8 @@
 package com.barf.tradefinder;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -16,29 +17,21 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.AbstractAction;
-import javax.swing.BoxLayout;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 
 import com.barf.tradefinder.domain.Item;
 import com.barf.tradefinder.domain.Item.ItemType;
 import com.barf.tradefinder.domain.PaintedItem.Color;
 import com.barf.tradefinder.domain.TradeOffer;
-import com.barf.tradefinder.domain.UrlTextPane;
+import com.barf.tradefinder.domain.UrlLinksButton;
 
 public class GUI extends JFrame {
   private static final long serialVersionUID = 1L;
-
-  static JPanel mainPanel = new JPanel();
-  static JPanel keyOfferPanel = new JPanel();
-  static JPanel itemOfferPanel = new JPanel();
 
   static List<TradeOffer> lastRequest = new ArrayList<>();
 
@@ -46,43 +39,43 @@ public class GUI extends JFrame {
 
   public GUI() {
     this.setTitle("TradeFinder");
+    this.setSize(260, 84);
     this.setResizable(false);
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setLayout(new BorderLayout());
 
-    GUI.mainPanel.setLayout(new BoxLayout(GUI.mainPanel, BoxLayout.Y_AXIS));
-    GUI.keyOfferPanel.setLayout(new BoxLayout(GUI.keyOfferPanel, BoxLayout.Y_AXIS));
-    GUI.itemOfferPanel.setLayout(new BoxLayout(GUI.itemOfferPanel, BoxLayout.Y_AXIS));
+    this.setLayout(new GridBagLayout());
+    final GridBagConstraints c = new GridBagConstraints();
+    c.fill = GridBagConstraints.BOTH;
+    c.weightx = 1;
+    c.weighty = 0.5;
 
     final JButton search = new JButton("Search");
-    search.setPreferredSize(new Dimension(260, 26));
-    this.add(search, BorderLayout.NORTH);
+    c.gridx = 0;
+    c.gridy = 0;
+    c.gridwidth = 2;
+    this.add(search, c);
 
-    final JScrollPane scroll = new JScrollPane(GUI.mainPanel);
-    this.add(scroll, BorderLayout.CENTER);
+    final UrlLinksButton keyUrls = new UrlLinksButton();
+    keyUrls.setText("key");
+    c.weightx = 0.5;
+    c.gridy = 1;
+    c.gridwidth = 1;
+    this.add(keyUrls, c);
 
-    final JTextPane keyText = new JTextPane();
-    keyText.setText("Key offers:");
-    keyText.setEditable(false);
-    GUI.mainPanel.add(keyText);
-    GUI.mainPanel.add(GUI.keyOfferPanel);
-
-    final JTextPane itemText = new JTextPane();
-    itemText.setText("Item offers:");
-    itemText.setEditable(false);
-    GUI.mainPanel.add(itemText);
-    GUI.mainPanel.add(GUI.itemOfferPanel);
+    final UrlLinksButton itemUrls = new UrlLinksButton();
+    itemUrls.setText("item");
+    c.gridx = 1;
+    this.add(itemUrls, c);
 
     this.setLocationRelativeTo(null);
     this.setVisible(true);
-    this.pack();
 
     search.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent arg0) {
-
-        GUI.keyOfferPanel.removeAll();
-        GUI.itemOfferPanel.removeAll();
+        keyUrls.removeUrls();
+        itemUrls.removeUrls();
 
         final Set<TradeOffer> keyOffers = new HashSet<>();
         final Set<TradeOffer> itemOffers = new HashSet<>();
@@ -136,27 +129,18 @@ public class GUI extends JFrame {
 
         for (final TradeOffer tradeOffer : keyOffers) {
           if (!tradeOffer.isSupressed()) {
-            final UrlTextPane textPane = new UrlTextPane();
-            textPane.setText(tradeOffer.getLink());
-            GUI.keyOfferPanel.add(textPane);
+            keyUrls.addUrl(tradeOffer.getLink());
           }
         }
 
         for (final TradeOffer tradeOffer : itemOffers) {
           if (!tradeOffer.isSupressed()) {
-            final UrlTextPane textPane = new UrlTextPane();
-            textPane.setText(tradeOffer.getLink());
-            GUI.itemOfferPanel.add(textPane);
+            itemUrls.addUrl(tradeOffer.getLink());
           }
         }
 
-        // calculate maximum height
-        scroll.setPreferredSize(null);
-        GUI.this.pack();
-        final int preferredWidth = Math.min(260, scroll.getWidth());
-        final int preferredHeight = Math.min(600, scroll.getHeight());
-        scroll.setPreferredSize(new Dimension(preferredWidth, preferredHeight));
-        GUI.this.pack();
+        keyUrls.setText("key");
+        itemUrls.setText("item");
       }
     });
 
